@@ -1,4 +1,6 @@
-# Verified `u32` endian slice
+# Verified endian slices
+
+## `u32`
 
 `endian_u32.rs` models the four-byte component implemented by
 `BigEndian::{read_u32, write_u32}` and
@@ -25,4 +27,27 @@ Verify with that exact binary:
 
 ```text
 /ssd1/sichangheagent/work_logs/private_artifacts/midas_lex_12096/toolchain/verus-2026-03-17/verus --no-cheating verus/endian_u32.rs
+```
+
+## `u24`
+
+`endian_u24.rs` models the three-byte component implemented by the public
+`BigEndian::{read_u24, write_u24}` and
+`LittleEndian::{read_u24, write_u24}` defaults in `src/lib.rs`. Those defaults
+traverse the endian-specific variable-width `read_uint` and `write_uint`
+implementations with a width of three bytes.
+
+The executable shadow model proves exact base-256 byte equations for every
+three-byte input and proves both read-after-write round trips for every
+representable unsigned 24-bit value. Its writer precondition records the
+production API's representability requirement. This is not a verifier-checked
+refinement proof of the production crate: `tests/u24_verus_correspondence.rs`
+provides focused correspondence evidence for the production methods, including
+the accepted maximum, first rejected value, exact layouts, exhaustive reader
+inputs, and preservation after the written three-byte prefix.
+
+Verify with the same binary and provenance recorded above:
+
+```text
+/ssd1/sichangheagent/work_logs/private_artifacts/midas_lex_12096/toolchain/verus-2026-03-17/verus --no-cheating verus/endian_u24.rs
 ```
